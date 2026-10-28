@@ -1,5 +1,6 @@
 name: build-realm
 on: workflow_dispatch
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -8,24 +9,29 @@ jobs:
         with: { node-version: 20 }
       - uses: actions/setup-java@v4
         with: { distribution: temurin, java-version: 17 }
+
       - name: Install NDK
         run: |
           rm -rf $ANDROID_HOME/ndk/27.1.12297006
           yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --install "ndk;27.1.12297006" "cmake;3.22.1"
-      - name: Buat project RN
+
+      - name: Buat project React Native (v0.86.3)
         run: |
-          npx @react-native-community/cli init RealmBuild --version 0.77.0 --skip-install --skip-git-init
+          npx @react-native-community/cli init RealmBuild --version 0.86.3 --skip-install --skip-git-init
           cd RealmBuild
           npm install
-          npm install realm@0.86.3
+          npm install realm
+
       - name: Build release arm64
         run: |
           cd RealmBuild/android
           ./gradlew assembleRelease -PreactNativeArchitectures=arm64-v8a
-      - name: Ambil .so
+
+      - name: Ambil file .so
         run: |
           cd RealmBuild/android/app/build/outputs/apk/release
           unzip -o *.apk 'lib/arm64-v8a/librealm.so' 'lib/arm64-v8a/libreactnative.so' -d /tmp/out
+
       - uses: actions/upload-artifact@v4
         with:
           name: so-files
