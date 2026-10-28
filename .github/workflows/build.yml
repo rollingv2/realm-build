@@ -17,7 +17,7 @@ jobs:
           npx @react-native-community/cli init RealmBuild --version 0.77.0 --skip-install --skip-git-init
           cd RealmBuild
           npm install
-          npm install realm@20.1.0
+          npm install realm@0.86.3
       - name: Build release arm64
         run: |
           cd RealmBuild/android
